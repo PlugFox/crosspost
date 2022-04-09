@@ -1,0 +1,25 @@
+name: crosspost
+description: >
+  Cross-posting for Dart.
+version: 0.0.1
+repository: https://github.com/PlugFox/crosspost
+issue_tracker: https://github.com/PlugFox/crosspost/issues
+homepage: https://github.com/PlugFox/crosspost
+#publish_to: https://pub.dev
+#documentation: https://pub.dev/documentation/crosspost/latest/
+#authors:
+#  - Plague Fox <plugfox@gmail.com>
+
+environment:
+  sdk: '>=2.16.0 <3.0.0'
+
+dependencies:
+  meta: ^1.7.0
+
+dev_dependencies:
+  coverage: ^1.2.0
+  test: ^1.20.2
+
+#dependency_overrides:
+
+#executables:
