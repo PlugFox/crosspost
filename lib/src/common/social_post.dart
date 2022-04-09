@@ -87,6 +87,9 @@ class _SocialPostImpl extends SocialPost with _ChangePostContentMixin {
   int get length => _source.length;
 
   @override
+  ISocialContent get last => _source.last;
+
+  @override
   ISocialContent operator [](int index) => _source[index];
 }
 

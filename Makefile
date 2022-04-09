@@ -1,6 +1,6 @@
 -include *.mk
 
-.PHONY: clean format get upgrade outdated test coverage
+.PHONY: clean format get upgrade outdated codegen test coverage
 
 clean:
 	@rm -rf coverage pubspec.lock .packages .dart_tool
@@ -17,6 +17,10 @@ upgrade: get
 
 outdated:
 	@dart pub outdated --transitive --show-all --dev-dependencies --dependency-overrides
+
+codegen: get
+	@dart run build_runner build --delete-conflicting-outputs --release
+	@dart format -l 80 --fix .
 
 test:
 	@dart test --concurrency=6 --platform vm --coverage=coverage test/*

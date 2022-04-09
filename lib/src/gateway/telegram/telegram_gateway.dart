@@ -5,14 +5,21 @@ import 'package:crosspost/src/common/social_post.dart';
 /// Service for sending messages to Telegram
 /// {@endtemplate}
 class TelegramGateway extends SocialGateway {
+  /// {@macro telegram_gateway.telegram_gateway}
+  TelegramGateway({
+    void Function(ISocialGatewayResponse response)? onDone,
+    void Function(Object error, StackTrace stackTrace)? onError,
+  }) : super(onDone: onDone, onError: onError);
+
   @override
-  bool validate() {
-    // TODO: implement validate
+  Future<void> transform(ISocialPost post, Sink<ISocialGatewayRequest> sink) {
+    // TODO: implement transform
     throw UnimplementedError();
   }
 
   @override
-  void send(ISocialPost post) {
+  Future<ISocialGatewayResponse> send(ISocialGatewayRequest request) {
     // TODO: implement send
+    throw UnimplementedError();
   }
 }

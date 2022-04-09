@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:async';
+
 import 'package:crosspost/src/common/social_content.dart';
 import 'package:crosspost/src/common/social_content_data.dart';
 import 'package:crosspost/src/common/social_post.dart';
@@ -19,6 +21,10 @@ void main() => group(
         group(
           'content_data',
           _contentData,
+        );
+        group(
+          'social_gateway',
+          _socialGateway,
         );
       },
     );
@@ -268,4 +274,29 @@ void _contentData() {
       );
     },
   );
+}
+
+void _socialGateway() {
+  test('completer', () {
+    expectLater(
+      (Completer<bool>()..complete(Future<bool>.value(true))).future,
+      completion(same(true)),
+    );
+    expectLater(
+      () => Completer<bool>()
+        ..complete(Future<bool>.value(true))
+        ..complete(Future<bool>.value(false)),
+      throwsStateError,
+    );
+    expectLater(
+      () => Completer<bool>()
+        ..complete(
+          Future<bool>.delayed(Duration(milliseconds: 50), () => true),
+        )
+        ..complete(
+          Future<bool>.delayed(Duration(milliseconds: 50), () => false),
+        ),
+      throwsStateError,
+    );
+  });
 }
