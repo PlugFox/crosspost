@@ -237,6 +237,7 @@ void _contentData() {
   test(
     'constructor',
     () {
+      expect(() => TextContentData.text('text'), returnsNormally);
       expect(TextContentData.text('text'), isA<ISocialContentData>());
       expect(TextContentData.text('text'), isA<ITextContentData>());
       expect(TextContentData.text('text'), isA<TextContentData>());
