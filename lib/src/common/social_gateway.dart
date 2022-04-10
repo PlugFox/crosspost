@@ -33,6 +33,10 @@ abstract class ISocialGateway<Req extends ISocialGatewayRequest,
     implements EventSink<ISocialPost>, IClosable {
   /// Is gateway is already initialized
   bool get isInitialized;
+
+  /// Add and send post to social network
+  @override
+  Future<void> add(ISocialPost post);
 }
 
 /// {@macro social_gateway.social_gateway}
@@ -50,15 +54,18 @@ abstract class SocialGateway<Req extends ISocialGatewayRequest,
     void Function(Object error, StackTrace stackTrace)? onError,
   })  : onDone = onDone ?? _onDoneByDefault,
         onError = onError ?? _onErrorByDefault {
-    (_completer..complete(initialize()))
-        .future
-        .timeout(const Duration(minutes: 5))
-        .then<void>(
-      (_) => _isInitialized = true,
-      onError: (Object e, StackTrace stackTrace) {
-        this.onError(e, StackTrace.current);
-      },
-    );
+    runZonedGuarded<void>(() async {
+      await Future<void>.delayed(Duration(milliseconds: 50));
+      await initialize().then<void>((_) {
+        _isInitialized = true;
+        _initCompleter.complete();
+      }).timeout(const Duration(minutes: 5));
+    }, (Object error, StackTrace stackTrace) {
+      _isInitialized = false;
+      //_initCompleter.completeError(error, stackTrace);
+      _initCompleter.complete();
+      this.onError(error, stackTrace);
+    });
   }
 
   static void _onDoneByDefault(ISocialGatewayResponse response) {}
@@ -68,11 +75,11 @@ abstract class SocialGateway<Req extends ISocialGatewayRequest,
   @override
   bool get isInitialized => _isInitialized;
   bool _isInitialized = false;
-  final Completer<void> _completer = Completer<void>();
+  final Completer<void> _initCompleter = Completer<void>();
 
   /// Fires when the gateway is initialized
   Future<void> get initialized =>
-      _completer.future.timeout(const Duration(minutes: 5));
+      _initCompleter.future.timeout(const Duration(minutes: 5));
 
   @override
   bool get isClosed => _isClosed;
@@ -103,9 +110,9 @@ abstract class SocialGateway<Req extends ISocialGatewayRequest,
   @protected
   Future<Rsp> send(Req request);
 
-  @protected
-  @mustCallSuper
   @override
+  @protected
+  @visibleForTesting
   void addError(Object error, [StackTrace? stackTrace]) {
     onError(error, stackTrace ?? StackTrace.current);
   }
@@ -115,15 +122,12 @@ abstract class SocialGateway<Req extends ISocialGatewayRequest,
   Future<void> close() async {
     assert(!isClosed, 'Social gateway is already closed');
     await initialized;
-    assert(isInitialized, 'Social gateway is not initialized');
     _isClosed = true;
     _isInitialized = false;
   }
 
   @override
-  void add(ISocialPost post) {
-    assert(!isClosed, 'gateway must not be closed');
-    assert(post.isNotEmpty, 'post must not be empty');
+  Future<void> add(ISocialPost post) {
     if (isClosed) {
       final error = StateError('gateway must not be closed');
       onError(error, StackTrace.current);
@@ -138,8 +142,9 @@ abstract class SocialGateway<Req extends ISocialGatewayRequest,
     if (isInitialized) {
       stream = const Stream<void>.empty();
     } else {
-      stream = Stream<void>.fromFuture(_completer.future);
+      stream = Stream<void>.fromFuture(_initCompleter.future);
     }
+    final completer = Completer<void>();
     stream
         .transform<Req>(
           StreamTransformer.fromHandlers(
@@ -152,8 +157,13 @@ abstract class SocialGateway<Req extends ISocialGatewayRequest,
         .timeout(const Duration(minutes: 2))
         .listen(
           onDone,
-          onError: onError,
-          cancelOnError: false,
+          onError: (Object error, StackTrace stackTrace) {
+            onError(error, stackTrace);
+            completer.completeError(error, stackTrace);
+          },
+          cancelOnError: true,
+          onDone: completer.isCompleted ? null : completer.complete,
         );
+    return completer.future;
   }
 }

@@ -26,7 +26,10 @@ abstract class ISocialContent {
 /// {@template social_content.text_content}
 /// Social post content with text.
 /// {@endtemplate}
-abstract class ITextContent implements ISocialContent {}
+abstract class ITextContent implements ISocialContent {
+  @override
+  abstract final ITextContentData data;
+}
 
 /// {@template social_content.photo_content}
 /// Social post content with photo.

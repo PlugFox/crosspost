@@ -33,11 +33,20 @@ abstract class ISocialPost implements Iterable<ISocialContent> {
 abstract class SocialPost extends Iterable<ISocialContent>
     implements ISocialPost {
   /// {@macro social_post.social_post}
-  factory SocialPost(ISocialContent content) => _SocialPostImpl(
+  factory SocialPost(Object content) {
+    if (content is ISocialContent) {
+      return _SocialPostImpl(
         <ISocialContent>[
           content,
         ],
       );
+    } else {
+      // Automatic created social content from dynamic object
+      throw UnimplementedError(
+        'SocialPost can only be created from ISocialContent right now.',
+      );
+    }
+  }
 
   /// {@macro social_post.social_post}
   factory SocialPost.join(

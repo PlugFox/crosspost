@@ -2,32 +2,36 @@
 
 import 'dart:async';
 
+import 'package:crosspost/src/common/exception.dart';
 import 'package:crosspost/src/common/social_content.dart';
 import 'package:crosspost/src/common/social_content_data.dart';
+import 'package:crosspost/src/common/social_gateway.dart';
 import 'package:crosspost/src/common/social_post.dart';
+import 'package:test/fake.dart';
 import 'package:test/test.dart';
 
-void main() => group(
-      'common',
-      () {
-        group(
-          'social_post',
-          _socialPostTest,
-        );
-        group(
-          'social_content',
-          _socialContent,
-        );
-        group(
-          'content_data',
-          _contentData,
-        );
-        group(
-          'social_gateway',
-          _socialGateway,
-        );
-      },
-    );
+void main() => group('common', () {
+      group(
+        'social_post',
+        _socialPostTest,
+      );
+      group(
+        'social_content',
+        _socialContent,
+      );
+      group(
+        'content_data',
+        _contentData,
+      );
+      group(
+        'social_gateway',
+        _socialGateway,
+      );
+      group(
+        'exceptions',
+        _exceptions,
+      );
+    });
 
 void _socialPostTest() {
   setUpAll(
@@ -300,4 +304,59 @@ void _socialGateway() {
       throwsStateError,
     );
   });
+
+  test('initialization_problem', () async {
+    var errors = 0;
+    final gateway = _FakeGatewayWithInitializationException(
+      onError: (Object e, StackTrace st) => errors++,
+    );
+    expect(errors, equals(0));
+    //await expectLater(gateway.initialized, throwsException);
+    await expectLater(gateway.initialized, completes);
+    expect(errors, equals(1));
+    await expectLater(gateway.close(), completes);
+    expect(errors, equals(1));
+  });
+}
+
+void _exceptions() {
+  test(
+    'auth_exception',
+    () {
+      expect(
+        () => AuthenticationException('message'),
+        returnsNormally,
+      );
+      expect(
+        () => throw AuthenticationException('message'),
+        throwsA(isA<Exception>()),
+      );
+      expect(
+        AuthenticationException('message').toString(),
+        equals('message'),
+      );
+    },
+  );
+}
+
+class _FakeGatewayWithInitializationException extends SocialGateway {
+  _FakeGatewayWithInitializationException({
+    void Function(Object error, StackTrace stackTrace)? onError,
+  }) : super(onError: onError);
+
+  @override
+  Future<void> initialize() async {
+    await super.initialize();
+    throw Exception('Fake initialize exception');
+  }
+
+  @override
+  Future<ISocialGatewayResponse> send(ISocialGatewayRequest request) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> transform(ISocialPost post, Sink<ISocialGatewayRequest> sink) {
+    throw UnimplementedError();
+  }
 }
