@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:crosspost/src/common/exception.dart';
+import 'package:crosspost/src/common/social_content.dart';
 import 'package:crosspost/src/common/social_post.dart';
 import 'package:meta/meta.dart';
 
@@ -30,13 +32,13 @@ abstract class IClosable {
 /// {@endtemplate}
 abstract class ISocialGateway<Req extends ISocialGatewayRequest,
         Rsp extends ISocialGatewayResponse>
-    implements EventSink<ISocialPost>, IClosable {
+    implements EventSink<Iterable<ISocialContent>>, IClosable {
   /// Is gateway is already initialized
   bool get isInitialized;
 
   /// Add and send post to social network
   @override
-  Future<void> add(ISocialPost post);
+  Future<void> add(Iterable<ISocialContent> post);
 }
 
 /// {@macro social_gateway.social_gateway}
@@ -55,7 +57,6 @@ abstract class SocialGateway<Req extends ISocialGatewayRequest,
   })  : onDone = onDone ?? _onDoneByDefault,
         onError = onError ?? _onErrorByDefault {
     runZonedGuarded<void>(() async {
-      await Future<void>.delayed(Duration(milliseconds: 50));
       await initialize().then<void>((_) {
         _isInitialized = true;
         _initCompleter.complete();
@@ -104,7 +105,7 @@ abstract class SocialGateway<Req extends ISocialGatewayRequest,
 
   /// Filter, validate, transform and prepare post to send to social network
   @protected
-  Future<void> transform(ISocialPost post, Sink<Req> sink);
+  Future<void> transform(Iterable<ISocialContent> post, Sink<Req> sink);
 
   /// Send request to social network
   @protected
@@ -127,14 +128,14 @@ abstract class SocialGateway<Req extends ISocialGatewayRequest,
   }
 
   @override
-  Future<void> add(ISocialPost post) {
+  Future<void> add(Iterable<ISocialContent> post) {
     if (isClosed) {
       final error = StateError('gateway must not be closed');
       onError(error, StackTrace.current);
       throw error;
     }
     if (post.isEmpty) {
-      final error = ArgumentError.value(post, 'post', 'post must not be empty');
+      final error = EmptyPostException();
       onError(error, StackTrace.current);
       throw error;
     }
@@ -147,7 +148,7 @@ abstract class SocialGateway<Req extends ISocialGatewayRequest,
     final completer = Completer<void>();
     stream
         .transform<Req>(
-          StreamTransformer.fromHandlers(
+          StreamTransformer<void, Req>.fromHandlers(
             handleData: (void _, EventSink<Req> sink) {
               transform(post, sink);
             },

@@ -7,7 +7,6 @@ import 'package:crosspost/src/common/social_content.dart';
 import 'package:crosspost/src/common/social_content_data.dart';
 import 'package:crosspost/src/common/social_gateway.dart';
 import 'package:crosspost/src/common/social_post.dart';
-import 'package:test/fake.dart';
 import 'package:test/test.dart';
 
 void main() => group('common', () {
@@ -356,7 +355,8 @@ class _FakeGatewayWithInitializationException extends SocialGateway {
   }
 
   @override
-  Future<void> transform(ISocialPost post, Sink<ISocialGatewayRequest> sink) {
+  Future<void> transform(
+      Iterable<ISocialContent> post, Sink<ISocialGatewayRequest> sink) {
     throw UnimplementedError();
   }
 }

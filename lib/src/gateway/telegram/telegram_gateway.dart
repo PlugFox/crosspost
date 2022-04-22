@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crosspost/src/common/exception.dart';
+import 'package:crosspost/src/common/social_content.dart';
 import 'package:crosspost/src/common/social_gateway.dart';
 import 'package:crosspost/src/common/social_post.dart';
 
@@ -36,30 +37,26 @@ class TelegramGateway extends SocialGateway<_TelegramRequest, TelegramResponse>
 
   @override
   Future<TelegramResponse> send(_TelegramRequest request) async {
-    if (request.message?.isNotEmpty ?? false) {
-      final response = await _client.post(
-        Uri.parse('https://api.telegram.org/bot$_token/sendMessage'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-        },
-        body: <String, Object?>{
-          'chat_id': _chatID,
-          'text': 'This is a test from curl',
-          'disable_notification': false,
-          'parse_mode': _parseMode,
-        },
+    final response = await _client.post(
+      Uri.parse('https://api.telegram.org/bot$_token/sendMessage'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: <String, Object?>{
+        'chat_id': _chatID,
+        'text': 'This is a test from curl',
+        'disable_notification': false,
+        'parse_mode': _parseMode,
+      },
+    );
+    if (response.statusCode == 200) {
+      return TelegramResponse.fromJson(
+        jsonDecode(response.body) as Map<String, Object?>,
       );
-      if (response.statusCode == 200) {
-        return TelegramResponse.fromJson(
-          jsonDecode(response.body) as Map<String, Object?>,
-        );
-      } else {
-        throw AuthenticationException(
-          'Telegram response status code: ${response.statusCode}',
-        );
-      }
     } else {
-      throw UnimplementedError('Telegram message is empty');
+      throw AuthenticationException(
+        'Telegram response status code: ${response.statusCode}',
+      );
     }
   }
 
@@ -103,7 +100,7 @@ mixin _TransformTelegramRequestMixin
     on SocialGateway<_TelegramRequest, TelegramResponse> {
   @override
   Future<void> transform(
-    ISocialPost post,
+    Iterable<ISocialContent> post,
     Sink<_TelegramRequest> sink,
   ) async {
     final buffer = StringBuffer();

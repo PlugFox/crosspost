@@ -179,6 +179,32 @@ void _telegram() {
     verify(client.close()).called(1);
   });
 
+  test('telegram_empty_message', () async {
+    final client = mocks.MockClient();
+    final telegram = TelegramGateway(
+      token: '1',
+      chatID: '1',
+      httpClient: client,
+    );
+    await expectLater(
+      () => telegram.add(<ISocialContent>[]),
+      throwsA(isA<EmptyPostException>()),
+    );
+    verifyNever(
+      client.post(
+        any,
+        headers: anyNamed('headers'),
+        body: anyNamed('body'),
+      ),
+    );
+    await telegram.close();
+    expect(telegram.isClosed, isTrue);
+    expect(telegram.isInitialized, isFalse);
+    verifyNever(client.close());
+    client.close();
+    verify(client.close()).called(1);
+  });
+
   test('throw_network_exception', () async {
     final client = mocks.MockClient();
     when(
@@ -259,6 +285,49 @@ void _telegram() {
       () => telegram.add(SocialPost(SocialContent.text('test'))),
       throwsStateError,
     );
+  });
+
+  test('send_long_message', () async {
+    final client = mocks.MockClient();
+    when(
+      client.post(
+        any,
+        headers: anyNamed('headers'),
+        body: anyNamed('body'),
+      ),
+    ).thenAnswer(
+      (_) async => http.Response(
+        '{"ok":true}',
+        200,
+      ),
+    );
+    var rspCount = 0;
+    var errCount = 0;
+    final telegram = TelegramGateway(
+      token: '1',
+      chatID: '1',
+      httpClient: client,
+      onDone: (rsp) => rspCount++,
+      onError: (Object obj, StackTrace st) => errCount++,
+    );
+    expect(rspCount, equals(0));
+    expect(errCount, equals(0));
+    await telegram.add(SocialPost(SocialContent.text('!' * 100000)));
+    verify(
+      client.post(
+        any,
+        headers: anyNamed('headers'),
+        body: anyNamed('body'),
+      ),
+    ).called(1);
+    await telegram.close();
+    expect(telegram.isClosed, isTrue);
+    expect(telegram.isInitialized, isFalse);
+    expect(rspCount, equals(1));
+    expect(errCount, equals(0));
+    verifyNever(client.close());
+    client.close();
+    verify(client.close()).called(1);
   });
 }
 
