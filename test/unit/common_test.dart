@@ -356,7 +356,9 @@ class _FakeGatewayWithInitializationException extends SocialGateway {
 
   @override
   Future<void> transform(
-      Iterable<ISocialContent> post, Sink<ISocialGatewayRequest> sink) {
+    Iterable<ISocialContent> post,
+    Sink<ISocialGatewayRequest> sink,
+  ) {
     throw UnimplementedError();
   }
 }
