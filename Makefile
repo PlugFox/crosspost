@@ -1,31 +1,4 @@
--include *.mk
+-include makefiles/*.mk
 
-.PHONY: clean format get upgrade outdated codegen test coverage
-
-clean:
-	@rm -rf coverage pubspec.lock .packages .dart_tool
-
-format:
-	@dart fix --apply .
-	@dart format -l 80 --fix .
-
-get:
-	@dart pub get
-
-upgrade: get
-	@dart pub upgrade
-
-outdated:
-	@dart pub outdated --transitive --show-all --dev-dependencies --dependency-overrides
-
-codegen: get
-	@dart run build_runner build --delete-conflicting-outputs --release
-	@dart format -l 80 --fix .
-
-test:
-	@dart test --concurrency=6 --platform vm --coverage=coverage test/*
-
-coverage: test
-	@dart run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
-	# @lcov --summary coverage/lcov.info
-	@genhtml -o coverage coverage/lcov.info 
+help:
+	@echo "Usage: make [target]"
