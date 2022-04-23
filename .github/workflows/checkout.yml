@@ -37,7 +37,7 @@ jobs:
         with:
           fetch-depth: 2
       - name: Install Dependencies
-        run: time timeout 60 dart pub get
+        run: timeout 60 dart pub get
       - name: Check format
         run: timeout 60 dart format --set-exit-if-changed -l 80 -o none .
       - name: Check analyzer
