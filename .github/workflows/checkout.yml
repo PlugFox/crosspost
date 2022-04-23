@@ -37,11 +37,11 @@ jobs:
         with:
           fetch-depth: 2
       - name: Install Dependencies
-        run: dart pub get
+        run: time timeout 60 dart pub get
       - name: Check format
-        run: dart format --set-exit-if-changed -l 80 -o none .
+        run: timeout 60 dart format --set-exit-if-changed -l 80 -o none .
       - name: Check analyzer
-        run: dart analyze --fatal-infos --fatal-warnings lib
+        run: timeout 60 dart analyze --fatal-infos --fatal-warnings lib
       #- name: Check with pana
       #  run: dart pub global activate pana && pana --json --no-warning --line-length 80
       - name: Run tests
