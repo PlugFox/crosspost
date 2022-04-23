@@ -1,4 +1,3 @@
-import 'package:crosspost/crosspost.dart';
 import 'package:crosspost/src/common/social_content.dart';
 import 'package:meta/meta.dart';
 

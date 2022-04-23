@@ -30,8 +30,7 @@ abstract class IClosable {
 /// {@template social_gateway.social_gateway}
 /// Using for social network services
 /// {@endtemplate}
-abstract class ISocialGateway<Req extends ISocialGatewayRequest,
-        Rsp extends ISocialGatewayResponse>
+abstract class ISocialGateway
     implements EventSink<Iterable<ISocialContent>>, IClosable {
   /// Is gateway is already initialized
   bool get isInitialized;
@@ -49,7 +48,7 @@ abstract class ISocialGateway<Req extends ISocialGatewayRequest,
 /// Calling [onDone] callback on every successful [send]
 /// Calling [onError] callback on every exception
 abstract class SocialGateway<Req extends ISocialGatewayRequest,
-    Rsp extends ISocialGatewayResponse> implements ISocialGateway<Req, Rsp> {
+    Rsp extends ISocialGatewayResponse> implements ISocialGateway {
   /// {@macro social_gateway.social_gateway}
   SocialGateway({
     void Function(Rsp response)? onDone,
