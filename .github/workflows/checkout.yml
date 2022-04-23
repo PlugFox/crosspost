@@ -12,6 +12,8 @@ on:
       - 'support/**'
     paths:
       - 'lib/**.dart'
+      - 'test/**.dart'
+      - 'example/**.dart'
   pull_request:
     branches:
       - 'master'
@@ -22,28 +24,30 @@ on:
       - 'support/**'
     paths:
       - 'lib/**.dart'
+      - 'test/**.dart'
+      - 'example/**.dart'
 
 jobs:
   checkout:
     runs-on: ubuntu-latest
     container:
-      image: google/dart:latest
+      image: dart:beta
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 2
       - name: Install Dependencies
-        run: dart pub get
+        run: timeout 60 dart pub get
       - name: Check format
-        run: dart format --set-exit-if-changed -l 80 -o none .
+        run: timeout 60 dart format --set-exit-if-changed -l 80 -o none .
       - name: Check analyzer
-        run: dart analyze --fatal-infos --fatal-warnings lib
+        run: timeout 60 dart analyze --fatal-infos --fatal-warnings lib
       #- name: Check with pana
       #  run: dart pub global activate pana && pana --json --no-warning --line-length 80
       - name: Run tests
         run: |
-          dart test --concurrency=6 --platform vm --coverage=coverage test/
-          dart run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
+          timeout 240 dart test --concurrency=6 --platform vm --coverage=coverage test/
+          timeout 60 dart run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2.1.0
         with:
