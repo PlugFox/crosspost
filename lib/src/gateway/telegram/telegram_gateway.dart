@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:crosspost/src/common/exception.dart';
 import 'package:crosspost/src/common/social_content.dart';
 import 'package:crosspost/src/common/social_gateway.dart';
+import 'package:crosspost/src/common/social_gateway_base.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -10,7 +11,8 @@ import 'package:meta/meta.dart';
 /// {@template telegram_gateway.telegram_gateway}
 /// Service for sending messages to Telegram
 /// {@endtemplate}
-class TelegramGateway extends SocialGateway<_TelegramRequest, TelegramResponse>
+class TelegramGateway
+    extends SocialGatewayBase<_TelegramRequest, TelegramResponse>
     with _TransformTelegramRequestMixin {
   /// {@macro telegram_gateway.telegram_gateway}
   TelegramGateway({
@@ -98,7 +100,7 @@ class TelegramResponse implements ISocialGatewayResponse {
 }
 
 mixin _TransformTelegramRequestMixin
-    on SocialGateway<_TelegramRequest, TelegramResponse> {
+    on SocialGatewayBase<_TelegramRequest, TelegramResponse> {
   @override
   Future<void> transform(
     Iterable<ISocialContent> post,

@@ -6,6 +6,7 @@ import 'package:crosspost/src/common/exception.dart';
 import 'package:crosspost/src/common/social_content.dart';
 import 'package:crosspost/src/common/social_content_data.dart';
 import 'package:crosspost/src/common/social_gateway.dart';
+import 'package:crosspost/src/common/social_gateway_base.dart';
 import 'package:crosspost/src/common/social_post.dart';
 import 'package:test/test.dart';
 
@@ -338,7 +339,7 @@ void _exceptions() {
   );
 }
 
-class _FakeGatewayWithInitializationException extends SocialGateway {
+class _FakeGatewayWithInitializationException extends SocialGatewayBase {
   _FakeGatewayWithInitializationException({
     void Function(Object error, StackTrace stackTrace)? onError,
   }) : super(onError: onError);

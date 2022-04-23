@@ -1,10 +1,7 @@
 // ignore_for_file: close_sinks, unnecessary_lambdas
 
-import 'package:crosspost/src/common/exception.dart';
-import 'package:crosspost/src/common/social_content.dart';
-import 'package:crosspost/src/common/social_gateway.dart';
-import 'package:crosspost/src/common/social_post.dart';
-import 'package:crosspost/src/gateway/telegram/telegram_gateway.dart';
+import 'package:crosspost/develop.dart';
+import 'package:crosspost/src/common/social_gateway_base.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -27,7 +24,7 @@ void _telegram() {
       token: '1',
       chatID: '1',
     );
-    expect(telegram, isA<SocialGateway>());
+    expect(telegram, isA<SocialGatewayBase>());
     await expectLater(telegram.initialized, completes);
     expect(telegram.isInitialized, isTrue);
     await expectLater(telegram.close(), completes);
@@ -253,7 +250,7 @@ void _telegram() {
       chatID: '1',
       onError: (Object _, StackTrace __) => errors++,
     );
-    expect(telegram, isA<SocialGateway>());
+    expect(telegram, isA<SocialGatewayBase>());
     expect(errors, equals(0));
     telegram.addError(Exception('test'));
     expect(errors, equals(1));
