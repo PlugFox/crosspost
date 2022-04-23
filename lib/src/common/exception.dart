@@ -20,3 +20,17 @@ class EmptyPostException extends ArgumentError {
   EmptyPostException([Object message = 'Post must not be empty'])
       : super(message, 'post');
 }
+
+/// {@template exception.api_exception}
+/// API exception
+/// {@endtemplate}
+class APIException implements Exception {
+  /// {@macro exception.api_exception}
+  const APIException([this.message = 'API exception']);
+
+  /// Message
+  final String message;
+
+  @override
+  String toString() => message;
+}

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:args/args.dart';
 import 'package:crosspost/crosspost.dart';
 import 'package:meta/meta.dart';
@@ -5,7 +7,11 @@ import 'package:meta/meta.dart';
 // e.g. dart run example/bin/telegram.dart -t 123:ABC -c 123 -m "Hi *there*"
 void main(List<String> args) => Future<void>(() async {
       final data = _Arguments.fromIterable(args);
-      final gateway = TelegramGateway(token: data.token, chatID: data.chatID);
+      final gateway = TelegramGateway(
+        token: data.token,
+        chatID: data.chatID,
+        onDone: (rsp) => print('Message sent, id #${rsp.messageID}'),
+      );
       await gateway.add(SocialPost(data.message));
       await gateway.close();
     });

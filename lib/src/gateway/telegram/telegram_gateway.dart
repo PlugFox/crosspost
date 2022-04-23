@@ -92,11 +92,36 @@ class _TelegramRequest implements ISocialGatewayRequest {
 /// {@endtemplate}
 class TelegramResponse implements ISocialGatewayResponse {
   /// {@macro telegram_gateway.telegram_response}
-  const TelegramResponse();
+  const TelegramResponse({
+    required this.messageID,
+  });
 
   /// Create Telegram response from JSON
-  factory TelegramResponse.fromJson(Map<String, Object?> json) =>
-      const TelegramResponse();
+  factory TelegramResponse.fromJson(Map<String, Object?> json) {
+    final ok = json.remove('ok') as bool? ?? false;
+    if (!ok) {
+      throw const APIException('Telegram response is not ok');
+    }
+    try {
+      final result = json.remove('result') as Map<String, Object?>?;
+      if (result == null) {
+        throw const APIException(
+          'Telegram response doesn\'t contains "result" section',
+        );
+      }
+      return TelegramResponse(
+        messageID: (result.remove('message_id') as int?)!,
+      );
+    } on Object catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        APIException('Telegram response is not valid: $error'),
+        stackTrace,
+      );
+    }
+  }
+
+  /// Message id
+  final int messageID;
 }
 
 mixin _TransformTelegramRequestMixin
