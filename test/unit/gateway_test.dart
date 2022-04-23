@@ -12,8 +12,16 @@ import 'gateway_test.mocks.dart' as mocks;
 void main() => group(
       'gateway',
       () {
-        group('telegram', _telegram);
-        group('webhook', _webhook);
+        group(
+          'telegram',
+          _telegram,
+          timeout: const Timeout(Duration(seconds: 15)),
+        );
+        group(
+          'webhook',
+          _webhook,
+          timeout: const Timeout(Duration(seconds: 15)),
+        );
       },
     );
 

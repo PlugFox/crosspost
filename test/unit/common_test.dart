@@ -14,22 +14,27 @@ void main() => group('common', () {
       group(
         'social_post',
         _socialPostTest,
+        timeout: const Timeout(Duration(seconds: 15)),
       );
       group(
         'social_content',
         _socialContent,
+        timeout: const Timeout(Duration(seconds: 15)),
       );
       group(
         'content_data',
         _contentData,
+        timeout: const Timeout(Duration(seconds: 15)),
       );
       group(
         'social_gateway',
         _socialGateway,
+        timeout: const Timeout(Duration(seconds: 15)),
       );
       group(
         'exceptions',
         _exceptions,
+        timeout: const Timeout(Duration(seconds: 15)),
       );
     });
 
