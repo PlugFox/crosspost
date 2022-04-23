@@ -62,7 +62,7 @@ void _telegram() {
       ),
     ).thenAnswer(
       (_) async => http.Response(
-        '{"ok":true}',
+        '{"ok":true, "result": {"message_id": 1}}',
         200,
       ),
     );
@@ -97,7 +97,7 @@ void _telegram() {
       ),
     ).thenAnswer(
       (_) async => http.Response(
-        '{"ok":true}',
+        '{"ok":true, "result": {"message_id": 1}}',
         200,
       ),
     );
@@ -294,7 +294,7 @@ void _telegram() {
       ),
     ).thenAnswer(
       (_) async => http.Response(
-        '{"ok":true}',
+        '{"ok":true, "result": {"message_id": 1}}',
         200,
       ),
     );
