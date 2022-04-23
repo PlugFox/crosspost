@@ -1,0 +1,27 @@
+name: crosspost_example
+description: >
+  Example cross-posting for Dart.
+version: 0.0.1
+repository: https://github.com/PlugFox/crosspost
+issue_tracker: https://github.com/PlugFox/crosspost/issues
+homepage: https://github.com/PlugFox/crosspost
+publish_to: none
+#documentation: https://pub.dev/documentation/crosspost/latest/
+#authors:
+#  - Plague Fox <plugfox@gmail.com>
+
+environment:
+  sdk: '>=2.15.0 <3.0.0'
+
+dependencies:
+  meta: ^1.7.0
+  http: ^0.13.4
+  args: ^2.3.0
+  crosspost:
+    path: ../
+
+#dev_dependencies:
+
+#dependency_overrides:
+
+#executables:

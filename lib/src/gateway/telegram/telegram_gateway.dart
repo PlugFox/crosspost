@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:crosspost/src/common/exception.dart';
 import 'package:crosspost/src/common/social_content.dart';
 import 'package:crosspost/src/common/social_gateway.dart';
-import 'package:crosspost/src/common/social_post.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -42,12 +41,14 @@ class TelegramGateway extends SocialGateway<_TelegramRequest, TelegramResponse>
       headers: <String, String>{
         'Content-Type': 'application/json',
       },
-      body: <String, Object?>{
-        'chat_id': _chatID,
-        'text': 'This is a test from curl',
-        'disable_notification': false,
-        'parse_mode': _parseMode,
-      },
+      body: jsonEncode(
+        <String, Object?>{
+          'chat_id': _chatID,
+          'text': 'This is a test from Crosspost',
+          'disable_notification': false,
+          'parse_mode': _parseMode,
+        },
+      ),
     );
     if (response.statusCode == 200) {
       return TelegramResponse.fromJson(

@@ -1,3 +1,4 @@
+import 'package:crosspost/crosspost.dart';
 import 'package:crosspost/src/common/social_content.dart';
 import 'package:meta/meta.dart';
 
@@ -34,6 +35,9 @@ abstract class SocialPost extends Iterable<ISocialContent>
     implements ISocialPost {
   /// {@macro social_post.social_post}
   factory SocialPost(Object content) {
+    if (content is String) {
+      content = SocialContent.text(content);
+    }
     if (content is ISocialContent) {
       return _SocialPostImpl(
         <ISocialContent>[
