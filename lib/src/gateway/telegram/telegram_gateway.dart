@@ -6,7 +6,6 @@ import 'package:crosspost/src/common/social_gateway.dart';
 import 'package:crosspost/src/common/social_gateway_base.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 
 /// {@template telegram_gateway.telegram_gateway}
 /// Service for sending messages to Telegram
@@ -16,7 +15,9 @@ class TelegramGateway
     with _TransformTelegramRequestMixin {
   /// {@macro telegram_gateway.telegram_gateway}
   TelegramGateway({
+    // Telegram bot token
     required String token,
+    // Telegram chat id
     required String chatID,
     // Markdown, MarkdownV2, HTML
     String parseMode = 'MarkdownV2',
@@ -46,7 +47,7 @@ class TelegramGateway
       body: jsonEncode(
         <String, Object?>{
           'chat_id': _chatID,
-          'text': 'This is a test from Crosspost',
+          'text': request.message,
           'disable_notification': false,
           'parse_mode': _parseMode,
         },
@@ -94,7 +95,6 @@ class TelegramResponse implements ISocialGatewayResponse {
   const TelegramResponse();
 
   /// Create Telegram response from JSON
-  @internal
   factory TelegramResponse.fromJson(Map<String, Object?> json) =>
       const TelegramResponse();
 }

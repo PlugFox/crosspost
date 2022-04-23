@@ -2,10 +2,11 @@ import 'package:args/args.dart';
 import 'package:crosspost/crosspost.dart';
 import 'package:meta/meta.dart';
 
+// e.g. dart run example/bin/telegram.dart -t 123:ABC -c 123 -m "Hi *there*"
 void main(List<String> args) => Future<void>(() async {
       final data = _Arguments.fromIterable(args);
       final gateway = TelegramGateway(token: data.token, chatID: data.chatID);
-      await gateway.add(SocialPost('Hello world!'));
+      await gateway.add(SocialPost(data.message));
       await gateway.close();
     });
 
@@ -52,5 +53,6 @@ class _Arguments {
 
   @override
   String toString() => 'token: $token\n'
-      'chatID: $chatID';
+      'chatID: $chatID\n'
+      'message: $message';
 }
